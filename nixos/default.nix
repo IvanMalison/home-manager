@@ -140,7 +140,11 @@ in {
 
           # The activation script is run by a login shell to make sure
           # that the user is given a sane Nix environment.
-          ExecStart = "${usercfg.home.activationPackage}/activate";
+          ExecStart = pkgs.writeScript "activate-${username}" ''
+            #! ${pkgs.runtimeShell} -el
+            echo Activating home-manager configuration for ${username}
+            exec ${usercfg.home.activationPackage}/activate
+          '';
         };
       }) cfg.users;
   };
